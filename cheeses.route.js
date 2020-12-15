@@ -3,14 +3,33 @@ var Cheese = require("./cheese.model")
 
 module.exports = function(app) {
     app.get(`/api/v1/cheeses`, async function(req, res, next) {
+        var limit = parseInt(req.query.limit) || 5;
+        var offset = parseInt(req.query.offset) || 0;
         try {
-            var result = await Cheese.find()
+            var result = await Cheese.find().limit(limit).skip(offset)
+            var count = (await Cheese.find()).length
 
+            var qLimit = req.query.limit;
+            var qOffset = req.query.offset || 0;
+
+            var queryStringNext = [];
+            var queryStringPrevious = [];
+
+            if(qLimit) {
+                queryStringNext.push("limit=" + qLimit)
+                queryStringPrevious.push("limit=" + qLimit)
+            }
+            queryStringNext.push("offset=" + (parseInt(qOffset) + parseInt(limit)))
+            if(qOffset) {
+                queryStringPrevious.push("offset=" + parseInt(qOffset - limit))
+            }
+
+            var baseUrl = `${req.protocol}://${req.hostname}${ req.hostname == "localhost" ? ":" + process.env.PORT : "" }${req._parsedUrl.pathname}`
             var output = {
-                count: result.length,
-                next: `${req.protocol}://${req.hostname}${ req.hostname == "localhost" ? ":" + process.env.PORT : "" }${req.originalUrl}?offset=20`,
-                previous: null,
-                url: `${req.protocol}://${req.hostname}${ req.hostname == "localhost" ? ":" + process.env.PORT : "" }${req.originalUrl}`,
+                count,
+                next: (offset + limit < count) ? `${baseUrl}?${queryStringNext.join("&")}` : null,
+                previous: offset > 0 ? `${baseUrl}?${queryStringPrevious.join("&")}` : null,
+                url: `${baseUrl}?` + (offset ? "offset=" + offset : ""),
                 results: result
             }
             res.json(output)
