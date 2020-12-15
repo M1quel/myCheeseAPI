@@ -1,10 +1,20 @@
+const { query } = require("express");
 var Cheese = require("./cheese.model")
 
 module.exports = function(app) {
-    app.get("/api/v1/cheeses", async function(req, res, next) {
+    app.get(`/api/v1/cheeses`, async function(req, res, next) {
         try {
             var result = await Cheese.find()
-            res.json(result)
+
+            var output = {
+                count: result.length,
+                next: `${req.protocol}://${req.hostname}${ req.hostname == "localhost" ? ":" + process.env.PORT : "" }${req.originalUrl}?offset=20`,
+                previous: null,
+                url: `${req.protocol}://${req.hostname}${ req.hostname == "localhost" ? ":" + process.env.PORT : "" }${req.originalUrl}`,
+                results: result
+            }
+            res.json(output)
+
         } catch (error) {
             return next(error)
         }
