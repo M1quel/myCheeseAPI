@@ -65,7 +65,8 @@ module.exports = function(app) {
                 price: req.fields.price,
                 weight: req.fields.weight,
                 strength: req.fields.strength,
-                brand: req.fields.brand
+                brand: req.fields.brand,
+                img: req.fields.img
             });
             cheese.save()
 

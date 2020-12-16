@@ -5,7 +5,8 @@ var Cheese = new Schema({
     price: SchemaTypes.Decimal128,
     weight: SchemaTypes.Number,
     strength: SchemaTypes.String,
-    brand: SchemaTypes.String
+    brand: SchemaTypes.String,
+    img: SchemaTypes.String
 })
 
 module.exports = model("Cheese", Cheese)
