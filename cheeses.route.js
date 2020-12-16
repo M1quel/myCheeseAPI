@@ -1,5 +1,6 @@
 const { query } = require("express");
 var Cheese = require("./cheese.model")
+var auth = require("./auth-middleware");
 
 module.exports = function(app) {
     app.get(`/api/v1/cheeses`, async function(req, res, next) {
@@ -57,7 +58,7 @@ module.exports = function(app) {
     })
 
 
-    app.post("/api/v1/cheeses", function(req, res, next) {
+    app.post("/api/v1/cheeses", auth,  function(req, res, next) {
         try {
             var cheese = new Cheese({
                 name: req.fields.name,
@@ -77,7 +78,7 @@ module.exports = function(app) {
 
 
 
-    app.patch("/api/v1/cheeses/:id", async function(req, res, next) {
+    app.patch("/api/v1/cheeses/:id", auth, async function(req, res, next) {
         try {
             var {name, price, weight, strength, brand} = req.fields;
             var updateObject = {}
@@ -102,7 +103,7 @@ module.exports = function(app) {
 
 
 
-    app.delete("/api/v1/cheeses/:id", async function(req, res, next) {
+    app.delete("/api/v1/cheeses/:id", auth, async function(req, res, next) {
         try {
             await Cheese.findByIdAndRemove(req.params.id)
             res.status(204)
