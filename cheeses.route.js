@@ -25,7 +25,7 @@ module.exports = function(app) {
                 queryStringPrevious.push("offset=" + parseInt(qOffset - limit))
             }
 
-            var baseUrl = `${req.protocol}://${req.hostname}${ req.hostname == "localhost" ? ":" + process.env.PORT : "" }${req._parsedUrl.pathname}`
+            var baseUrl = `https://${req.hostname}${ req.hostname == "localhost" ? ":" + process.env.PORT : "" }${req._parsedUrl.pathname}`
             var output = {
                 count,
                 next: (offset + limit < count) ? `${baseUrl}?${queryStringNext.join("&")}` : null,
